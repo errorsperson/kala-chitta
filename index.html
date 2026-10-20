@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Kala Chitta</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body { height: 100%; }
+
+  body {
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    background: #111;
+    color: #eee;
+    min-height: 100%;
+    overflow-x: hidden;
+  }
+
+  /* ---------- PAGES ---------- */
+  .page {
+    min-height: 100vh;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 14px 24px;
+  }
+  .page.active { display: flex; }
+
+  /* ---------- LANGUAGE TOGGLE ---------- */
+  .lang {
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .lang button {
+    padding: 7px 14px;
+    font-size: 14px;
+    font-weight: bold;
+    background: #1c1c1c;
+    color: #888;
+    border: 1px solid #333;
+    border-radius: 20px;
+    cursor: pointer;
+  }
+  .lang button.on { background: #c0392b; color: #fff; border-color: #c0392b; }
+
+  h1 {
+    font-size: 28px;
+    letter-spacing: 3px;
+    color: #fff;
+    text-align: center;
+    margin-top: 18px;
+    text-transform: uppercase;
+  }
+
+  .box {
+    width: 100%;
+    max-width: 480px;
+    background: #1c1c1c;
+    border: 1px solid #2e2e2e;
+    border-radius: 14px;
+    padding: 20px 16px;
+    margin-top: 26px;
+  }
+
+  label {
+    display: block;
+    font-size: 15px;
+    color: #aaa;
+    margin-bottom: 8px;
+  }
+
+  input {
+    width: 100%;
+    padding: 15px 14px;
+    font-size: 18px;
+    background: #0d0d0d;
+    border: 2px solid #333;
+    border-radius: 10px;
+    color: #fff;
+    outline: none;
+  }
+  input:focus { border-color: #c0392b; }
+
+  button.go {
+    width: 100%;
+    margin-top: 14px;
+    padding: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    background: #c0392b;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  button.go:active { background: #96281b; }
+
+  /* ---------- PAGE 2 : RESULT ---------- */
+  .back {
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .back button {
+    padding: 10px 18px;
+    font-size: 16px;
+    font-weight: bold;
+    background: #1c1c1c;
+    color: #eee;
+    border: 1px solid #333;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  .back button:active { background: #2a2a2a; }
+
+  #result { width: 100%; max-width: 480px; margin-top: 24px; }
+
+  .chitta {
+    background: #000;
+    border: 3px solid #c0392b;
+    border-radius: 12px;
+    padding: 22px 16px;
+    color: #eee;
+    animation: pop .25s ease;
+  }
+  .chitta h2 {
+    font-size: 24px;
+    color: #fff;
+    text-align: center;
+    border-bottom: 1px dashed #444;
+    padding-bottom: 10px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+  }
+  .chitta .line {
+    font-size: 17px;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .chitta .stamp {
+    margin-top: 16px;
+    text-align: right;
+    font-size: 13px;
+    color: #c0392b;
+    letter-spacing: 3px;
+    font-weight: bold;
+  }
+
+  .error {
+    background: #000;
+    border: 3px solid #333;
+    border-radius: 12px;
+    padding: 34px 14px;
+    text-align: center;
+    animation: pop .25s ease;
+  }
+  .error .big {
+    font-size: 64px;
+    line-height: 1;
+    font-weight: 900;
+    letter-spacing: 6px;
+    color: #ff2b2b;
+    text-shadow: 0 0 12px rgba(255,0,0,.5);
+  }
+  .error .msg { margin-top: 16px; font-size: 16px; color: #aaa; }
+
+  @keyframes pop {
+    from { transform: scale(.94); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ PAGE 1 : NAAM DALO ============ -->
+<div class="page active" id="page1">
+  <div class="lang">
+    <button id="btnHi">हिंदी</button>
+    <button id="btnHing" class="on">Hinglish</button>
+  </div>
+
+  <h1 id="p1title">Kala Chitta</h1>
+
+  <div class="box">
+    <label for="nameInput" id="p1label">Apna naam daalo</label>
+    <input id="nameInput" type="text" autocomplete="off" placeholder="Yahan naam likho..." />
+    <button class="go" id="checkBtn">Check Karo</button>
+  </div>
+</div>
+
+<!-- ============ PAGE 2 : CHITTA / ERROR ============ -->
+<div class="page" id="page2">
+  <div class="lang">
+    <button id="btnHi2">हिंदी</button>
+    <button id="btnHing2" class="on">Hinglish</button>
+  </div>
+
+  <div class="back">
+    <button id="backBtn">&larr; <span id="backTxt">Wapas</span></button>
+  </div>
+
+  <div id="result"></div>
+</div>
+
+<script>
+/* ============================================================
+   LISC / LIST  ->  yahan edit karo (abhi 20 jagah bani hui hai)
+
+   { name: "Ram Kumar", chitta: "yahan uska kala chitta likho" }
+
+   - chitta me jitni line chaho "\n" se likh do
+   - chittaHi = hindi version (agar daaloge to हिंदी button par wahi dikhega,
+     na daalo to Hinglish wala hi dikhega)
+   - list badhani ho to bas naya { } jod do
+   ============================================================ */
+const LIST = [
+  // yahan ek-ek karke naam add hote jayenge (kul 20)
+  // { name: "Naam Yahan", chitta: "chitta ka text yahan" }
+  { name: "*gulabshah shahzadi*", chitta: "gyan joyti public school me ak ladke se pyaar karti thi lekin usne tumhe kabhi nhi chaha phir tumne sohel name ke ladke se pyaar kiya lekin jab sohel ko pata chala ki tum uss ladke se pyar karti thi to sohel ne tumhe jhod diya phir tumne asif name ke ladke se pyaar kiya usne bhi kiya but Jayda der tak aye nhi chala",
+    chittaHi: "ग्यान ज्योति पब्लिक स्कूल में एक लड़के से प्यार करती थी लेकिन उसने तुम्हें कभी नहीं चाहा फिर तुमने सोहेल नाम के लड़के से प्यार किया लेकिन जब सोहेल को पता चला कि तुम उस लड़के से प्यार करती थीं तो सोहेल ने तुम्हें छोड़ दिया फिर तुमने आसिफ नाम के लड़के से प्यार किया उसने भी किया लेकिन ज़्यादा देर तक ये नहीं चला" },
+  { name: "*gulam rabbani*", chitta: "Pehle tum Sakina name ke ladki se pyar kiya jo ki tumhari hi gaon ki thi to tum logo ka break up ho gaya uske baad bahut saal ke baad 2026 kuch mahine Pehle Chandni name ki ladki se pyar kiya lekin usne tumhe cheat kiya aur wo bhi Chhod di aur ab tum baat kar rahe ho girl_islam_3257 se aye uski insta i'd hai",
+    chittaHi: "पहले तुमने सकीना नाम की लड़की से प्यार किया जो कि तुम्हारी ही गाँव की थी तो तुम लोगों का ब्रेकअप हो गया उसके बाद बहुत सालों के बाद 2026 कुछ महीने पहले चांदनी नाम की लड़की से प्यार किया लेकिन उसने तुम्हें चीट किया और वो भी छोड़ दी और अब तुम बात कर रहे हो girl_islam_3257 से ये उसकी इंस्टा आईडी है" }
+];
+
+/* ---------- 2 LANGUAGE : Hinglish + Hindi ---------- */
+const T = {
+  hing: {
+    title: "Kala Chitta",
+    label: "Apna naam daalo",
+    placeholder: "Yahan naam likho...",
+    btn: "Check Karo",
+    back: "Wapas",
+    stamp: "KALA CHITTA",
+    errTitle: "ERROR",
+    errNoName: "Pehle naam likho!",
+    errNotFound: "Ye naam list me nahi mila"
+  },
+  hi: {
+    title: "काला चिट्ठा",
+    label: "अपना नाम डालो",
+    placeholder: "यहाँ नाम लिखो...",
+    btn: "चेक करो",
+    back: "वापस",
+    stamp: "काला चिट्ठा",
+    errTitle: "ERROR",
+    errNoName: "पहले नाम लिखो!",
+    errNotFound: "यह नाम सूची में नहीं मिला"
+  }
+};
+
+let lang = "hing"; // default Hinglish
+
+function applyLang() {
+  const t = T[lang];
+  document.getElementById("p1title").textContent = t.title;
+  document.getElementById("p1label").textContent = t.label;
+  document.getElementById("nameInput").placeholder = t.placeholder;
+  document.getElementById("checkBtn").textContent = t.btn;
+  document.getElementById("backTxt").textContent = t.back;
+
+  document.getElementById("btnHi").classList.toggle("on", lang === "hi");
+  document.getElementById("btnHing").classList.toggle("on", lang === "hing");
+  document.getElementById("btnHi2").classList.toggle("on", lang === "hi");
+  document.getElementById("btnHing2").classList.toggle("on", lang === "hing");
+
+  document.documentElement.lang = (lang === "hi") ? "hi" : "en";
+}
+
+function setLang(l) {
+  lang = l;
+  applyLang();
+  // agar result page par ho to wo bhi naye language me dikhe
+  if (document.getElementById("page2").classList.contains("active") && lastQuery) {
+    showResult(lastQuery);
+  }
+}
+
+/* ---------- PAGES ---------- */
+function goPage1() {
+  document.getElementById("page2").classList.remove("active");
+  document.getElementById("page1").classList.add("active");
+  window.scrollTo(0, 0);
+}
+
+function goPage2() {
+  document.getElementById("page1").classList.remove("active");
+  document.getElementById("page2").classList.add("active");
+  window.scrollTo(0, 0);
+}
+
+/* ---------- SEARCH ---------- */
+function normalize(str) {
+  return str.trim().toLowerCase().replace(/\s+/g, " ").replace(/\*/g, "");
+}
+
+let lastQuery = "";
+
+function showResult(query) {
+  const t = T[lang];
+  const found = LIST.find(p => normalize(p.name) === query);
+  const box = document.getElementById("result");
+
+  if (!query) {
+    box.innerHTML =
+      '<div class="error">' +
+        '<div class="big">' + t.errTitle + '</div>' +
+        '<div class="msg">' + t.errNoName + '</div>' +
+      '</div>';
+    return;
+  }
+
+  if (found) {
+    const text = (lang === "hi" && found.chittaHi) ? found.chittaHi : found.chitta;
+    const lines = text.split("\n").join("<br>");
+    box.innerHTML =
+      '<div class="chitta">' +
+        '<h2>' + found.name + '</h2>' +
+        '<div class="line">' + lines + '</div>' +
+        '<div class="stamp">' + t.stamp + '</div>' +
+      '</div>';
+  } else {
+    box.innerHTML =
+      '<div class="error">' +
+        '<div class="big">' + t.errTitle + '</div>' +
+        '<div class="msg">' + t.errNotFound + '</div>' +
+      '</div>';
+  }
+}
+
+function check() {
+  lastQuery = normalize(document.getElementById("nameInput").value);
+  showResult(lastQuery);
+  goPage2();
+}
+
+/* ---------- EVENTS ---------- */
+document.getElementById("checkBtn").addEventListener("click", check);
+document.getElementById("nameInput").addEventListener("keydown", e => {
+  if (e.key === "Enter") check();
+});
+document.getElementById("backBtn").addEventListener("click", () => {
+  goPage1();
+  document.getElementById("nameInput").focus();
+});
+
+document.getElementById("btnHi").addEventListener("click", () => setLang("hi"));
+document.getElementById("btnHing").addEventListener("click", () => setLang("hing"));
+document.getElementById("btnHi2").addEventListener("click", () => setLang("hi"));
+document.getElementById("btnHing2").addEventListener("click", () => setLang("hing"));
+
+applyLang();
+</script>
+</body>
+</html>
